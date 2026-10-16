@@ -11,14 +11,18 @@ from collections import Counter
 from pathlib import Path
 import string
 
-# Get the file path from the current file
-file_path = Path(__file__).resolve().parent
+try:
+    # Get the file path from the current file
+    file_path = Path(__file__).resolve().parent
 
-# Get the data file path
-data_file = file_path / "data.txt"
+    # Get the data file path
+    data_file = file_path / "data.txt"
 
-#Read the file into a string
-my_string = data_file.read_text()
+    #Read the file into a string
+    my_string = data_file.read_text()
+except OSError as e:
+    print(f"Error reading the file: {e}")
+    exit(1)
 
 # convert everything to lowercase
 string_lower = my_string.lower()
@@ -31,10 +35,18 @@ clean_str = string_lower.translate(table)
 words_list = clean_str.split()
 
 # Count how many times each words have been repeated in the word list 
-word_counts = Counter(words_list)
-
+words_count = {}
+for word in words_list:
+    if word in words_count:
+        words_count[word] += 1
+    else:
+        words_count[word] = 1
+        
 # Sort the counts from highest to lowest and get the top 10 words
-top_10_words = word_counts.most_common(10)
+top_10_words = sorted(words_count.items(), key=lambda x: x[1], reverse=True)[:10]
 
 for word, count in top_10_words:
     print(f"{word}:{count}")
+    
+if words_count == {}:
+    print("The file is empty or contains no valid words.")
