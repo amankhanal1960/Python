@@ -7,7 +7,6 @@
 # Sort the counts from highest to lowest
 # Print the top 10
 
-from collections import Counter
 from pathlib import Path
 import string
 

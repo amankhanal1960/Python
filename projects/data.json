@@ -1,0 +1,74 @@
+[
+    {
+        "id": 1,
+        "amount": 45.50,
+        "category": "Food",
+        "date": "2026-10-12"
+    },
+    {
+        "id": 2,
+        "amount": 120.00,
+        "category": "Utilities",
+        "date": "2026-10-12"
+    },
+    {
+        "id": 3,
+        "amount": 12.75,
+        "category": "Food",
+        "date": "2026-10-13"
+    },
+    {
+        "id": 4,
+        "amount": 60.00,
+        "category": "Entertainment",
+        "date": "2026-10-14"
+    },
+    {
+        "id": 5,
+        "amount": 35.00,
+        "category": "Utilities",
+        "date": "2026-10-14"
+    },
+    {
+        "id": 6,
+        "amount": 15.00,
+        "category": "Transport",
+        "date": "2026-10-15"
+    },
+    {
+        "id": 7,
+        "amount": 8.50,
+        "category": "Food",
+        "date": "2026-10-15"
+    },
+    {
+        "id": 8,
+        "amount": 24.00,
+        "category": "Entertainment",
+        "date": "2026-10-16"
+    },
+    {
+        "id": 9,
+        "amount": 42.30,
+        "category": "Food",
+        "date": "2026-10-16"
+    },
+    {
+        "id": 10,
+        "amount": 115.00,
+        "category": "Healthcare",
+        "date": "2026-10-17"
+    },
+    {
+        "id": 11,
+        "amount": 22.50,
+        "category": "Transport",
+        "date": "2026-10-17"
+    },
+    {
+        "id": 12,
+        "amount": 14.20,
+        "category": "Food",
+        "date": "2026-10-18"
+    }
+]
