@@ -1,13 +1,13 @@
 [
     {
         "id": 1,
-        "amount": 45.50,
+        "amount": 45.5,
         "category": "Food",
         "date": "2026-10-12"
     },
     {
         "id": 2,
-        "amount": 120.00,
+        "amount": 120.0,
         "category": "Utilities",
         "date": "2026-10-12"
     },
@@ -19,56 +19,63 @@
     },
     {
         "id": 4,
-        "amount": 60.00,
+        "amount": 60.0,
         "category": "Entertainment",
         "date": "2026-10-14"
     },
     {
         "id": 5,
-        "amount": 35.00,
+        "amount": 35.0,
         "category": "Utilities",
         "date": "2026-10-14"
     },
     {
         "id": 6,
-        "amount": 15.00,
+        "amount": 15.0,
         "category": "Transport",
         "date": "2026-10-15"
     },
     {
         "id": 7,
-        "amount": 8.50,
+        "amount": 8.5,
         "category": "Food",
         "date": "2026-10-15"
     },
     {
         "id": 8,
-        "amount": 24.00,
+        "amount": 24.0,
         "category": "Entertainment",
         "date": "2026-10-16"
     },
     {
         "id": 9,
-        "amount": 42.30,
+        "amount": 42.3,
         "category": "Food",
         "date": "2026-10-16"
     },
     {
         "id": 10,
-        "amount": 115.00,
+        "amount": 115.0,
         "category": "Healthcare",
         "date": "2026-10-17"
     },
     {
         "id": 11,
-        "amount": 22.50,
+        "amount": 22.5,
         "category": "Transport",
         "date": "2026-10-17"
     },
     {
         "id": 12,
-        "amount": 14.20,
+        "amount": 14.2,
         "category": "Food",
         "date": "2026-10-18"
+    },
+    {
+        "id": 13,
+        "amount": 250,
+        "category": "food",
+        "note": "momo",
+        "date": "2026-10-19"
     }
 ]

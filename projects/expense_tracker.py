@@ -18,6 +18,7 @@ file_path = Path(__file__).resolve().parent
 data_file = file_path / "data.json"
 try:
     my_string = data_file.read_text()
+    # this is the deserialization step, converting the JSON string back into a Python object  
     expenses = json.loads(my_string)
     expense_dict = expenses
     
@@ -63,7 +64,7 @@ def add_expense(amount, category, note):
         "amount": int(amount), 
         "category": category,
         "note": note,
-        "date": date.today()
+        "date": date.today().isoformat()
         
     }
     try:
@@ -77,6 +78,7 @@ def add_expense(amount, category, note):
         print("successfully added the new expense.")
     except OSError as e:
         print(f"File error: {e}")
+        
 
 def main():
     parser = argparse.ArgumentParser(
