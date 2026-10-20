@@ -6,12 +6,6 @@
         "date": "2026-10-12"
     },
     {
-        "id": 2,
-        "amount": 120.0,
-        "category": "Utilities",
-        "date": "2026-10-12"
-    },
-    {
         "id": 3,
         "amount": 12.75,
         "category": "Food",

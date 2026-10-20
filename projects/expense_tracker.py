@@ -50,14 +50,28 @@ def filter_expenses_by_category(category):
     category_found = False
     for item in expense_dict:
         if item["category"].lower() == category.lower():
-            print(f" 'id': {item["id"]}, 'amount': {item["amount"]}, 'category': {item["category"]} ")
+            print(f" 'id': {item['id']}, 'amount': {item['amount']}, 'category': {item['category']}, 'date': {item['date']} ")
             category_found = True
     if not category_found:
         print(f"No existing category: {category}")
-            
+        
+def remove_expense(expense_id):
+    id = int(expense_id)
+    try:
+        # i gets the index number from enumerate and item gets the dictionary from expenses list. next() will return the first index where the id matches, or None if not found.
+        index_to_remove = next((i for i, item in enumerate(expenses) if item["id"] == id), None)
+        if index_to_remove is not None:
+            expenses.pop(index_to_remove)
+            updated_string = json.dumps(expenses, indent = 4)
+            data_file.write_text(updated_string)
+            print(f"Successfully removed expense with ID: {id}")
+        else:
+            print(f"No expense found with ID: {id}")
+    except OSError as e:
+        print(f"Error removing expense: {e}")
 
 def add_expense(amount, category, note):
-    new_id = len(expenses) + 1
+    new_id = max([item["id"] for item in expenses], default=0) + 1
     
     new_expense = {
         "id": new_id,
@@ -93,17 +107,21 @@ def main():
     
     parser.add_argument(
         "--category", 
-        help="Enther the category"
+        help="Enter the category"
     )
     parser.add_argument(
-            "--amount",
-            help=" Enter the amount"
-        )
+        "--amount",
+        help=" Enter the amount"
+    )
 
     parser.add_argument(
-            "--note",
-            help=" Enter the a note"
-        )
+        "--note",
+        help=" Enter the a note"
+    )
+    parser.add_argument(
+        "--id",
+        help = "Delete an expense by ID"
+    )
 
     args = parser.parse_args()
     
@@ -120,7 +138,8 @@ def main():
             add_expense(args.amount, args.category, args.note)
         else:
             print("Error: 'add' requires both --amount and --category")
-            
+    elif args.command == "delete" and args.id:
+        remove_expense(args.id)        
     else:
         print("Something went wrong")
     
