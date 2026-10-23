@@ -19,6 +19,8 @@ with open('data.csv', newline='') as csvfile:
         
     rainfall_sum = 0
     temperature_sum = 0
+    rainfall_count = 0
+    temperature_count = 0 
     temperature_max, rainfall_max = float('-inf'), float('-inf')
     temperature_min, rainfall_min = float('inf'), float('inf')
     for row in rows:
@@ -26,12 +28,14 @@ with open('data.csv', newline='') as csvfile:
                 if row['rainfall_mm'] != '':
                     current_rainfall = float(row['rainfall_mm'])
                     rainfall_sum += float(row['rainfall_mm'])
+                    rainfall_count += 1
                     rainfall_max = max(rainfall_max, current_rainfall)
                     rainfall_min = min(rainfall_min, current_rainfall)
             if row['temperature_c']:
                 if row['temperature_c'] != '':
                     current_temperature = float(row['temperature_c'])
                     temperature_sum += float(row['temperature_c'])
+                    temperature_count += 1
                     temperature_max = max(temperature_max, current_temperature)
                     temperature_min = min(temperature_min, current_temperature)
                     
@@ -41,15 +45,6 @@ with open('data.csv', newline='') as csvfile:
     print(f"The minimum temperature is: {temperature_min}")
     print(f"The maximum rainfall is: {rainfall_max}")
     print(f"The minimum rainfall is: {rainfall_min}")
+    print(f"Mean temperature is: {temperature_sum/ temperature_count}")
+    print(f"Mean Rainfall is: {rainfall_sum/ rainfall_count}")
     
-    
-    
-    
-    
-    
-    
-    # for row in rows:
-    #     if row['temperature_c']:
-    #         if row['temperature_c'] != '':
-    #             temperature_sum += float(row['temperature_c'])
-                
