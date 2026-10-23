@@ -9,13 +9,11 @@ with open('data.csv', newline='') as csvfile:
     
     headers = csvreader.fieldnames
     
-    missing_count = 0
-    missing_found = False
-    for row in rows:
-        for item in row:
+    for item in headers:
+        missing_count = 0
+        for index, row in enumerate(rows, start=1):
             if row[item] == '':
-                missing_found = True
                 missing_count += 1
-    if missing_found:
-         print(f"Missing item is {item}")      
-    print(f"Total missing percentage is: {missing_count / len(rows) * 100}%")
+                print(f"Missing item in row {index} is {item}")      
+        print(f"Total missing percentage in column {item} is: {missing_count / len(rows) * 100}%")
+        
