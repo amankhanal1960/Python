@@ -1,4 +1,5 @@
 import csv
+import argparse
 
 rows = []
 with open('data.csv', newline='') as csvfile:
@@ -6,17 +7,18 @@ with open('data.csv', newline='') as csvfile:
     
     for row in csvreader:  
         rows.append(row)
-    
     headers = csvreader.fieldnames
     
+
+def find_missing():
     for item in headers:
         missing_count = 0
         for index, row in enumerate(rows, start=1):
             if row[item] == '':
                 missing_count += 1
                 print(f"Missing item in row {index} is {item}")      
-        print(f"Total missing percentage in column {item} is: {missing_count / len(rows) * 100}%")
-        
+        # print(f"Total missing percentage in column {item} is: {missing_count / len(rows) * 100}%")
+def find_stats():    
     rainfall_sum = 0
     temperature_sum = 0
     rainfall_count = 0
@@ -48,3 +50,39 @@ with open('data.csv', newline='') as csvfile:
     print(f"Mean temperature is: {temperature_sum/ temperature_count}")
     print(f"Mean Rainfall is: {rainfall_sum/ rainfall_count}")
     
+def inspect(): 
+    num_rows = len(rows)
+    num_column = len(headers)
+    print(f"Number of rows are: {num_rows}")
+    print(f"Number of columns are: {num_column}")
+    
+    for item in headers:
+        nan_count = 0   
+        for row in rows:
+            if row[item] == '':
+                nan_count += 1
+        print(f"NAN count for row {item} is : {nan_count}")
+        
+def main():
+    parser = argparse.ArgumentParser(
+        description="dataset explorer CLI"
+    )    
+
+    parser.add_argument(
+        "command",
+        nargs="?",
+        help="Command to execute: inspect, stats, missing"
+    )
+
+    args = parser.parse_args()
+    if args.command == "inspect":
+        inspect()
+    elif args.command == "stats":
+        find_stats()
+    elif args.command == "missing":
+        find_missing()
+    else:
+        print("Error: Something went wrong!")
+        
+if __name__ == "__main__":
+    main()
