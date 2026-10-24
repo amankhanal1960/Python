@@ -1,16 +1,18 @@
 import csv
 import argparse
 
-rows = []
-with open('data.csv', newline='') as csvfile:
-    csvreader = csv.DictReader(csvfile)
-    
-    for row in csvreader:  
-        rows.append(row)
-    headers = csvreader.fieldnames
+def load_dataset(filepath):
+    rows = []
+    with open(filepath, newline='') as csvfile:
+        csvreader = csv.DictReader(csvfile)
+        
+        for row in csvreader:  
+            rows.append(row)
+        headers = csvreader.fieldnames
+    return rows, headers
     
 
-def find_missing():
+def find_missing(rows, headers):
     for item in headers:
         missing_count = 0
         for index, row in enumerate(rows, start=1):
@@ -18,7 +20,7 @@ def find_missing():
                 missing_count += 1
                 print(f"Missing item in row {index} is {item}")      
         # print(f"Total missing percentage in column {item} is: {missing_count / len(rows) * 100}%")
-def find_stats():    
+def find_stats(rows):  
     rainfall_sum = 0
     temperature_sum = 0
     rainfall_count = 0
@@ -50,7 +52,7 @@ def find_stats():
     print(f"Mean temperature is: {temperature_sum/ temperature_count}")
     print(f"Mean Rainfall is: {rainfall_sum/ rainfall_count}")
     
-def inspect(): 
+def inspect(rows, headers): 
     num_rows = len(rows)
     num_column = len(headers)
     print(f"Number of rows are: {num_rows}")
@@ -70,17 +72,25 @@ def main():
 
     parser.add_argument(
         "command",
-        nargs="?",
-        help="Command to execute: inspect, stats, missing"
+        choices=["inspect", "stats", "missing"],
+        help="Command to execute"
+    )
+    
+    parser.add_argument(
+        "filepath",
+        help="Path to the csv file"
     )
 
     args = parser.parse_args()
+    
+    rows, headers = load_dataset(args.filepath)
+    
     if args.command == "inspect":
-        inspect()
+        inspect(rows, headers)
     elif args.command == "stats":
-        find_stats()
+        find_stats(rows)
     elif args.command == "missing":
-        find_missing()
+        find_missing(rows, headers)
     else:
         print("Error: Something went wrong!")
         
