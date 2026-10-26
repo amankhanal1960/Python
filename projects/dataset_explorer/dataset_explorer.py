@@ -12,47 +12,56 @@ def load_dataset(filepath):
     return rows, headers
     
 
-def find_missing(rows, headers):
+def find_missing_summary(rows, headers):
     for item in headers:
-        missing_count = 0
+        missing_rows = []
+        
         for index, row in enumerate(rows, start=1):
             if row[item] == '':
-                missing_count += 1
-                print(f"Missing item in row {index} is {item}")      
-        # print(f"Total missing percentage in column {item} is: {missing_count / len(rows) * 100}%")
-def find_stats(rows):  
-    rainfall_sum = 0
-    temperature_sum = 0
-    rainfall_count = 0
-    temperature_count = 0 
-    temperature_max, rainfall_max = float('-inf'), float('-inf')
-    temperature_min, rainfall_min = float('inf'), float('inf')
+                missing_rows.append(index)
+        if len(missing_rows) > 0:
+            count = len(missing_rows)
+            print(f"Column {item} is missing {count} item in row {missing_rows}")
+
+def find_stats(rows, headers):  
+    stats = {}
     for row in rows:
-            if row['rainfall_mm']:
-                if row['rainfall_mm'] != '':
-                    current_rainfall = float(row['rainfall_mm'])
-                    rainfall_sum += float(row['rainfall_mm'])
-                    rainfall_count += 1
-                    rainfall_max = max(rainfall_max, current_rainfall)
-                    rainfall_min = min(rainfall_min, current_rainfall)
-            if row['temperature_c']:
-                if row['temperature_c'] != '':
-                    current_temperature = float(row['temperature_c'])
-                    temperature_sum += float(row['temperature_c'])
-                    temperature_count += 1
-                    temperature_max = max(temperature_max, current_temperature)
-                    temperature_min = min(temperature_min, current_temperature)
-                    
-    print(f"The sum is for rainfall is: {rainfall_sum}")
-    print(f"The sum is for temperature is: {temperature_sum}")
-    print(f"The maximum temperature is: {temperature_max}")
-    print(f"The minimum temperature is: {temperature_min}")
-    print(f"The maximum rainfall is: {rainfall_max}")
-    print(f"The minimum rainfall is: {rainfall_min}")
-    print(f"Mean temperature is: {temperature_sum/ temperature_count}")
-    print(f"Mean Rainfall is: {rainfall_sum/ rainfall_count}")
-    
+        for item in headers:
+            try:
+                row[item] = float(row[item]) 
+                
+                if item not in stats:
+                    stats[item] = {
+                        'sum': 0.0,
+                        'count': 0,
+                        'max': float('-inf'),
+                        'min': float('inf')
+                    } 
+                stats[item]['sum'] += row[item]
+                stats[item]['count'] += 1
+                stats[item]['max'] = max(stats[item]['max'], row[item])
+                stats[item]['min'] = min(stats[item]['min'], row[item])
+                
+            except ValueError:
+                pass
+
+    print(f"{'Column Name':<20}{'Mean':<12}{'Min':<12}{'Max':<12}")
+    print("-" * 51)
+        
+    for key, value in stats.items():
+        if value['count'] == 0:
+            print(f"{key:<20}{'N/A':<12}{'N/A':<12}{'N/A':<12}")
+            continue
+        
+        mean_value = value['sum'] / value['count']
+        mean_val = round(mean_value, 2)
+        max_val = round(value['max'], 2)
+        min_val = round(value['min'], 2)
+        
+        print(f"{key:<20}{mean_val:<12}{max_val:<12}{min_val:<12}")
+ 
 def inspect(rows, headers): 
+    sample_rows = rows[:5]
     num_rows = len(rows)
     num_column = len(headers)
     print(f"Number of rows are: {num_rows}")
@@ -64,6 +73,16 @@ def inspect(rows, headers):
             if row[item] == '':
                 nan_count += 1
         print(f"NAN count for row {item} is : {nan_count}")
+  
+    for header in headers:
+        print(header, end="\t")
+    print()
+    print("--------------------------------------")
+    
+    for row in sample_rows:
+        for header in headers:
+            print(row[header], end="\t")
+        print()
         
 def main():
     parser = argparse.ArgumentParser(
@@ -88,9 +107,9 @@ def main():
     if args.command == "inspect":
         inspect(rows, headers)
     elif args.command == "stats":
-        find_stats(rows)
+        find_stats(rows, headers)
     elif args.command == "missing":
-        find_missing(rows, headers)
+        find_missing_summary(rows, headers)
     else:
         print("Error: Something went wrong!")
         
