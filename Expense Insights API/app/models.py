@@ -1,6 +1,6 @@
 import enum
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, Numeric, Date, DateTime, Enum
+from sqlalchemy import Column, Integer, Nullable, String, Numeric, Date, DateTime, Enum, UniqueConstraint, null
 from app.database import Base
 
 class TransactionType(str, enum.Enum):
@@ -17,3 +17,18 @@ class Transaction(Base):
     date = Column(Date, nullable=False)
     type = Column(Enum(TransactionType), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    
+class Budget(Base):
+    __tablename__ = "budgets"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    category = Column(String, index=True, nullable=False)
+    month = Column(Integer, nullable=False)
+    year = Column(Integer, nullable=False)
+    budget_amount = Column(Numeric(10, 2), Nullable=False)
+    
+    __table_args__ = (
+        UniqueConstraint('category', 'month', 'year', name='_category_month_year_uc'),
+    )
+    
+        

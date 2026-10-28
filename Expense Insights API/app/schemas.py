@@ -1,6 +1,7 @@
 from datetime import date, datetime
 from decimal import Decimal
-from typing import List, Optional
+from typing import Optional
+from click import File
 from pydantic import BaseModel, Field
 from app.models import TransactionType
 
@@ -23,7 +24,22 @@ class TransactionUpdate(TransactionBase):
 class TransactionResponse(TransactionBase):
     id: int
     created_at: datetime
+    
+class BudgetBase(BaseModel):
+    category: str = Field(..., min_length=1, description="Category cannot be empty")
+    month: int = Field(..., ge=1, le=12, description="Month must be between 1 and 12")
+    year: int = Field(..., ge=2000, description="Year must be a valid four digit integer")
+    budget_amount: Decimal = Field(..., gt=0, description="Budget amount must be greater than zero")
 
+class BudgetCreate(BudgetBase):
+    pass
+
+class BudgetUpdate(BudgetBase):
+    budget_amount : Decimal = Field(..., gt=0, description="Budget amount must be greater than zero")
+
+class BudgetResponse(BudgetBase):
+    id: int
+    
 class Config:
     from_attributes = True
     
@@ -35,5 +51,5 @@ class MonthlyAnalyticsResponse(BaseModel):
     total_income: Decimal
     total_expenses: Decimal
     balance: Decimal
-    spending_by_category: List[CategorySpend]
+    spending_by_category: list[CategorySpend]
     transaction_count: int
