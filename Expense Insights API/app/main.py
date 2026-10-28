@@ -1,8 +1,7 @@
-from typing import List
-from urllib import response
+from typing import List, Optional
 from fastapi import FastAPI, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
-
+from datetime import date
 from app import models, schemas
 from app.database import engine, get_db
 
@@ -25,9 +24,34 @@ def create_transaction(transaction: schemas.TransactionCreate, db: Session = Dep
     db.refresh(db_transaction)
     return db_transaction
 
-@app.get("/transactions", response_model=List[schemas.TransactionResponse])
-def list_transactions(db: Session = Depends(get_db)):
-    return db.query(models.Transaction).all()
+@app.get("/transactions", response_model=List[schemas.TransactionResponse], tags=["Transactions"])
+def list_transactions(
+    category: Optional[str] = None,
+    type: Optional[models.TransactionType] = None,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
+    db: Session = Depends(get_db)
+):
+    if start_date and end_date and start_date > end_date:
+        raise HTTPException(
+            status_code = 400,
+            detail="Start date cannot be greater than end date"
+        )
+    # Starting with a foundational query (not executing it yet)
+    query = db.query(models.Transaction)
+    
+    # layer on filters only if the user actually passed them
+    if category:
+        #.ilike() makes the search case-insensitive
+        query = query.filter(models.Transaction.category.ilike(category))
+    if type:
+        query = query.filter(models.Transaction.type == type)
+    if start_date:
+        query = query.filter(models.Transaction.date >= start_date)
+    if end_date:
+        query = query.filter(models.Trnasaction.date <= end_date)
+    
+    return query.all
 
 @app.get("/transactions/{transaction_id}", response_model=schemas.TransactionResponse)
 def get_transaction(transaction_id: int, db: Session = Depends(get_db)):

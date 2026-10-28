@@ -1,6 +1,6 @@
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Optional
+from typing import List, Optional
 from pydantic import BaseModel, Field
 from app.models import TransactionType
 
@@ -26,3 +26,14 @@ class TransactionResponse(TransactionBase):
 
 class Config:
     from_attributes = True
+    
+class CategorySpend(BaseModel):
+    category: str
+    total_spent: Decimal
+
+class MonthlyAnalyticsResponse(BaseModel):
+    total_income: Decimal
+    total_expenses: Decimal
+    balance: Decimal
+    spending_by_category: List[CategorySpend]
+    transaction_count: int
