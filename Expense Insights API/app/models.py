@@ -25,7 +25,7 @@ class Budget(Base):
     category = Column(String, index=True, nullable=False)
     month = Column(Integer, nullable=False)
     year = Column(Integer, nullable=False)
-    budget_amount = Column(Numeric(10, 2), Nullable=False)
+    budget_amount = Column(Numeric(10, 2), nullable=False)
     
     __table_args__ = (
         UniqueConstraint('category', 'month', 'year', name='_category_month_year_uc'),

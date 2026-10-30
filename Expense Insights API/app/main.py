@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from datetime import date
 from app import models, schemas
 from app.database import engine, get_db
-from app.routers import analytics
+from app.routers import analytics, budgets
 
 # this line automatically creates the SQLite database file and tables if they do not exist
 models.Base.metadata.create_all(bind=engine)
@@ -12,6 +12,8 @@ models.Base.metadata.create_all(bind=engine)
 app = FastAPI(title="Expense Insights API")
 
 app.include_router(analytics.router)
+
+app.include_router(budgets.router)
 
 # get request used to monitor the applications status   
 @app.get("/health", tags=["System"])
