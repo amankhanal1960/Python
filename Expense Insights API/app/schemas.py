@@ -1,7 +1,6 @@
 from datetime import date, datetime
 from decimal import Decimal
 from typing import Optional
-from click import File
 from pydantic import BaseModel, Field
 from app.models import TransactionType
 
@@ -53,3 +52,15 @@ class MonthlyAnalyticsResponse(BaseModel):
     balance: Decimal
     spending_by_category: list[CategorySpend]
     transaction_count: int
+    
+class BudgetReportItem(BaseModel):
+    category: str
+    budget_amount: Decimal
+    amount_spent: Decimal
+    Amount_remaining: Decimal
+    status: str # within the budget or over budget
+    
+class MonthlyBudgetReportResponse(BaseModel):
+    month: int
+    year: int
+    report: list[BudgetReportItem]

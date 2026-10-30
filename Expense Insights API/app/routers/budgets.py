@@ -1,3 +1,4 @@
+from decimal import Decimal
 from sqlite3 import IntegrityError
 
 from fastapi import APIRouter, Depends, HTTPException, status, Response
@@ -6,6 +7,8 @@ from sqlalchemy.exc import List
 
 from app import models, schemas
 from app.database import get_db
+
+from sqlalchemy import func
 
 router = APIRouter(
     prefix="/budget",
@@ -70,3 +73,51 @@ def delete_budget(
     budget_query.delete(synchronize_session=False)
     db.commit()
     return Response(status.HTTP_204_NO_CONTENT)
+
+@router.get("/report", response_model=schemas.MonthlyBudgetReportResponse)
+def get_budget_report(month: int, year: int, db: Session = Depends(get_db)):
+    budgets = db.query(models.Budget).filter(
+        models.Budget.month == month,
+        models.Budget.year == year
+    ).all()
+    
+    expenses = db.query(models.Transaction).filter(
+        func.extract('month', models.Transaction.date) == month, 
+        func.extract('year', models.Transaction.date) == year,
+        models.Transaction.type == models.TransactionType.EXPENSE
+    ).all()
+
+    expense_map = {}
+    for exp in expenses:
+        if exp.category not in expense_map:
+            expense_map[exp.category] = Decimal('0.00')
+        expense_map[exp.category] += Decimal(str(exp.amount))
+        
+    report_items = []
+    for budget in budgets:
+        cat = budget.category
+        b_amount = Decimal(str(budget.budget_amount))
+        
+        spent = expense_map.get(cat, Decimal('0.00'))
+        
+        remaining = b_amount - spent
+        
+        if spent <= b_amount:
+            status_label = "within budget"
+        else:
+            status_label = "over budget"
+            
+        report_items.append(
+            schemas.BudgetReportItem(
+                category=cat,
+                budget_amount=b_amount,
+                amount_spent=spent,
+                Amount_remaining=remaining,
+                status=status_label
+            )
+        )
+    return schemas.MonthlyAnalyticsResponse(
+        month=month,
+        year=year,
+        report=report_items
+    )
