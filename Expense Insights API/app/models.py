@@ -1,6 +1,6 @@
 import enum
 from datetime import datetime
-from sqlalchemy import Column, Integer, Nullable, String, Numeric, Date, DateTime, Enum, UniqueConstraint, null
+from sqlalchemy import Column, Integer, String, Numeric, Date, DateTime, Enum, UniqueConstraint
 from app.database import Base
 
 class TransactionType(str, enum.Enum):
