@@ -6,42 +6,45 @@ import os
 from app.database import Base, get_db
 from app.main import app
 
-TEST_DATABASE_URL = "sqlite:///./test_expense_insights.db"
-
-@pytest.fixture(scope="session", autouse=True)
-def setup_test_database():
-    engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})
+# by default pytest ficture has function scope, test_engine gets executed for every test function
+@pytest.fixture
+def test_engine(tmp_path):
+    db_path = tmp_path / "test_expense_insights.db"
+    
+    engine = create_engine(
+        f"sqlite:///{db_path}",
+        connect_args={"check_same_thread": False}
+    )
+    
     Base.metadata.create_all(bind=engine)
-    yield
+    
+    yield engine
+    
+    Base.metadata.drop_all(bind=engine)
     engine.dispose()
     
-    if os.path.exists("./test_expense_insights.db"):
-        try:
-            os.remove("./test_expense_insights.db")
-        except PermissionError:
-            pass
-    
-@pytest.fixture(name="session")
-def session_fixture():
-    engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})
-    TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    session = TestingSessionLocal()
-    try:
-        yield session
-    finally:
-        session.close()
-
 @pytest.fixture(name="client")
-def client_fixture(session):
+def client_fixture(test_engine):
+    
+    TestingSessionLocal =sessionmaker(
+        autocommit=False,
+        autoflush=False,
+        bind=test_engine
+    )
+    
     def override_get_db():
+        db = TestingSessionLocal()
         try:
-            yield session
+            yield db
         finally:
-            pass
+            db.close()
+    
     app.dependency_overrides[get_db] = override_get_db
     
     from fastapi.testclient import TestClient
+    
     with TestClient(app) as test_client:
         yield test_client
+        
+    app.dependency_overrides.pop(get_db, None)
     
-    app.dependency_overrides.clear()

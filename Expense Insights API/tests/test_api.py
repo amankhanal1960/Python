@@ -60,3 +60,21 @@ def test_create_invalid_budget(client):
     }
     response = client.post("/budget", json=payload)
     assert response.status_code == 422
+
+def test_get_transaction_by_category(client):
+    payload = {
+        "amount": "45.50",
+        "category": "Dining Out",
+        "type": "expense",
+        "date": "2026-10-30",
+        "note": "Dinner with team"
+    }
+    client.post("/transactions", json=payload)
+    
+    response = client.get("/transactions?category=Dining Out")
+    print(response.json())
+    
+    assert response.status_code == 200
+    assert len(response.json()) == 1
+    
+    

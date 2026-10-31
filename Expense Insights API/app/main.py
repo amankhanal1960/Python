@@ -43,8 +43,7 @@ def list_transactions(
             detail="Start date cannot be greater than end date"
         )
     # Starting with a foundational query (not executing it yet)
-    query = db.query(models.Transaction)
-    
+    query = db.query(models.Transaction)    
     # layer on filters only if the user actually passed them
     if category:
         #.ilike() makes the search case-insensitive
@@ -54,9 +53,11 @@ def list_transactions(
     if start_date:
         query = query.filter(models.Transaction.date >= start_date)
     if end_date:
-        query = query.filter(models.Trnasaction.date <= end_date)
+        query = query.filter(models.Transaction.date <= end_date)
+        
+    transaction = query.all()
     
-    return query.all
+    return transaction
 
 @app.get("/transactions/{transaction_id}", response_model=schemas.TransactionResponse)
 def get_transaction(transaction_id: int, db: Session = Depends(get_db)):
