@@ -12,9 +12,15 @@ TEST_DATABASE_URL = "sqlite:///./test_expense_insights.db"
 def setup_test_database():
     engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})
     Base.metadata.create_all(bind=engine)
+    yield
+    engine.dispose()
+    
     if os.path.exists("./test_expense_insights.db"):
-        os.remove("./test_expense_insights.db")
-        
+        try:
+            os.remove("./test_expense_insights.db")
+        except PermissionError:
+            pass
+    
 @pytest.fixture(name="session")
 def session_fixture():
     engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": False})

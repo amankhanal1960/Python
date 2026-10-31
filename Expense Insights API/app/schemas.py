@@ -25,6 +25,7 @@ class TransactionResponse(TransactionBase):
     created_at: datetime
     
 class BudgetBase(BaseModel):
+    model_config= {"from_attributes": True}
     category: str = Field(..., min_length=1, description="Category cannot be empty")
     month: int = Field(..., ge=1, le=12, description="Month must be between 1 and 12")
     year: int = Field(..., ge=2000, description="Year must be a valid four digit integer")

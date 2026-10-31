@@ -34,3 +34,29 @@ def test_create_invalid_negative_amount(client):
     
     # Verify that the bouncer correctly locked out the invalid entry
     assert response.status_code == 422
+    
+def test_create_valid_budget(client):
+    payload = {
+        "category": "Food",
+        "month": 12,
+        "year": 2026,
+        "budget_amount": "2000"
+    }
+    response = client.post("/budget", json=payload)
+    
+    assert response.status_code == 201
+    data = response.json()
+    assert data["category"] == "Food"
+    assert data["month"] == 12
+    assert data["year"] == 2026
+    assert "id" in data
+    
+def test_create_invalid_budget(client):
+    payload = {
+        "category": "Food",
+        "month": 209,
+        "year": 2026,
+        "budget_amount": "4000"
+    }
+    response = client.post("/budget", json=payload)
+    assert response.status_code == 422
