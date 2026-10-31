@@ -5,6 +5,9 @@ from datetime import date
 from app import models, schemas
 from app.database import engine, get_db
 from app.routers import analytics, budgets
+import io
+import csv
+from fastapi.responses import StreamingResponse
 
 # this line automatically creates the SQLite database file and tables if they do not exist
 models.Base.metadata.create_all(bind=engine)
@@ -90,3 +93,43 @@ def delete_transaction(transaction_id: int, db: Session = Depends(get_db)):
     transaction_query.delete(synchronize_session=False)
     db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+@app.get("/transactions/export/csv", tags=["Transaction"])
+def export_transactions_to_csv(
+    category: Optional[str] = None,
+    type: Optional[models.TransactionType] = None,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
+    db: Session = Depends(get_db)
+):
+    if start_date and end_date and start_date > end_date:
+        raise HTTPException(status_code=400, detail="Start date cannot be after end date")
+    
+    query = db.query(models.Transaction)
+    
+    if category:
+        query = query.filter(models.Transaction.category.ilike(category))
+    if type:
+        query = query.filter(models.Transaction.type == type)
+    if start_date:
+        query = query.filter(models.Transaction.date >= start_date)
+    if end_date:
+        query = query.filter(models.Transaction.date <= end_date)
+        
+    transactions = query.all()
+    
+    output = io.StringIO()
+    writer = csv.writer(output)
+    
+    writer.writerow(["ID", "Amount", "Category", "Type", "Date", "Note", "Created At"])
+    
+    for t in transactions:
+        writer.writerow([t.id, t.amount, t.category, t.type.value, t.date, t.note or "", t.created_at])
+        
+        output.seek(0)
+        
+        return StreamingResponse(
+            output,
+            media_type="text/csv",
+            headers={"Content-Disposition": "attachment"; filename=filtered_transactions.csv}
+        )
