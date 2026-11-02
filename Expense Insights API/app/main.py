@@ -21,7 +21,7 @@ app.include_router(budgets.router)
 # get request used to monitor the applications status   
 @app.get("/health", tags=["System"])
 def health_check():
-    return {"status": "healthy", "message": "API is running"}
+    return {"status": "Healthy", "message": "API is running!"}
 
 # this is post request used to receive incomming user data, validate it and write a new record into a relational database
 @app.post("/transactions", response_model=schemas.TransactionResponse, status_code=status.HTTP_201_CREATED)
@@ -126,10 +126,10 @@ def export_transactions_to_csv(
     for t in transactions:
         writer.writerow([t.id, t.amount, t.category, t.type.value, t.date, t.note or "", t.created_at])
         
-        output.seek(0)
+    output.seek(0)
         
-        return StreamingResponse(
-            output,
-            media_type="text/csv",
-            headers={"Content-Disposition": "attachment"; filename=filtered_transactions.csv}
-        )
+    return StreamingResponse(
+        output,
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=filtered_transactions.csv"}
+    )
