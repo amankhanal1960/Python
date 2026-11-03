@@ -31,7 +31,7 @@ class Task(Base):
     created_at = Column(Date, nullable=False)
     
     project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
-    creator_id = Column(Integer, ForeignKey("users.id"), nullable=False, ondelete="SET NULL")
+    creator_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     
 class Comment(Base):
     __tablename__ = "comments"
@@ -39,6 +39,6 @@ class Comment(Base):
     id = Column(Integer, primary_key=True, index=True)
     body = Column(String, nullable=False)
     created_at = Column(Date, nullable=False)
-    task_id = Column(Integer, ForeignKey("tasks.id"), ondelete="CASCADE", nullable=False)
-    author_id = Column(Integer, ForeignKey("users.id"), ondelete="CASCADE", nullable=False)
+    task_id = Column(Integer, ForeignKey("tasks.id", ondelete="CASCADE"), nullable=False)
+    author_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     
