@@ -1,9 +1,11 @@
-from fastapi import APIRouter, Depends, status, Response, HTTPException
-from sqlite3 import IntegrityError
-from sqlalchemy.exc import Session
+from fastapi import APIRouter, Depends, status, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
 from app import models, schemas
 from app.database import get_db
-from app.security import get_password_hash, verify_password
+from app.security import get_password_hash, verify_password, create_access_token
+
 router = APIRouter(
     prefix="/auth",
     tags=["Authentication"]
@@ -32,4 +34,23 @@ def create_user(user:schemas.UserCreate, db: Session = Depends(get_db)):
                 detail="User with this email already exists"
             )
 
-@router.post("/login",)
+@router.post("/login", status_code=status.HTTP_200_OK)
+def login_user(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db)
+):
+    db_user = db.query(models.User).filter(models.User.username == form_data.username).first()
+    
+    if not db_user or not verify_password(form_data.password, db_user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    token_payload = {"sub": db_user.username}
+    access_token = create_access_token(data=token_payload)
+    
+    return{
+        "access_token": access_token,
+        "token_type": "bearer"
+    }
