@@ -32,6 +32,7 @@ class Task(Base):
     
     project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
     creator_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    asignee_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     
 class Comment(Base):
     __tablename__ = "comments"
