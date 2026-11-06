@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Response
+from fastapi import APIRouter, Depends, HTTPException, Query, status, Response
 from sqlalchemy.orm import Session
 from app.database import get_db
 from sqlalchemy.exc import IntegrityError
@@ -35,17 +35,36 @@ def create_task(
             detail="Task with this name already exists"
         )
 
-@router.get("/{project_id}", response_model=list[schemas.TaskResponse], status_code=status.HTTP_200_OK)
+
+@router.get("/project/{project_id}", response_model=list[schemas.TaskResponse], status_code=status.HTTP_200_OK)
 def get_tasks(
     project_id: int,
+    limit: int = Query(default=10, ge=1, le=100),
+    skip: int = Query(default=0, ge=0),
+    sort_by: str = Query(default="created_at"),
+    #  Query(......) cleaner url ?status=completed
+    task_status: str | None = Query(default=None, alias="status"),
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user)
 ):
+    sort_columns = {
+    "due_date": models.Task.due_date,
+    "priority": models.Task.priority,
+    "created_at": models.Task.created_at
+    }
+    
     task_query = db.query(models.Task).filter(
         models.Task.creator_id == current_user.id,
         models.Task.project_id == project_id
     )
-    tasks = task_query.all()
+    if task_status:
+        task_query = task_query.filter(
+            models.Task.status == task_status
+        )
+        
+    selected_column = sort_columns.get(sort_by, models.Task.created_at)
+    task_query = task_query.order_by(selected_column.asc())
+    tasks = task_query.limit(limit).offset(skip).all()
     
     return tasks
 
