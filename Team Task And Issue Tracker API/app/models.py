@@ -1,3 +1,5 @@
+from sqlalchemy.orm import relationship
+
 from app.database import Base
 from sqlalchemy import Column, ForeignKey, Integer, String, Date
 
@@ -31,9 +33,17 @@ class Task(Base):
     created_at = Column(Date, nullable=False)
     
     project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
-    creator_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
-    asignee_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    creator_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=False)
+    asignee_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     
+    creator = relationship(
+        "User",
+        foreign_keys=[creator_id]
+    )
+    assignee = relationship(
+        "User",
+        foreign_keys=[asignee_id]
+    )
 class Comment(Base):
     __tablename__ = "comments"
     

@@ -56,3 +56,6 @@ class TaskUpdate(BaseModel):
     title: str
     status: str
     priority: str
+
+class TaskAssign(BaseModel):
+    assignee_id: int | None
