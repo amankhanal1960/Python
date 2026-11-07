@@ -101,7 +101,37 @@ def update_task(
     db.refresh(task)
     return task
 
-# @router.patch("/task/{task_id}/assignee")
+@router.patch("/task/{task_id}/assignee", status_code=status.HTTP_200_OK)
+def assign_task(
+    task_id: int,
+    assigned_task: schemas.TaskAssign,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    task_query = db.query(models.Task).filter(
+        models.Task.id == task_id,
+        models.Task.creator_id == current_user.id 
+    )
+    task = task_query.first()
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    
+    if assigned_task.assignee_id is not None:
+        assignee = db.query(models.User).filter(
+            models.User.id == assigned_task.assignee_id
+        ).first()
+        
+        if not assignee:
+            raise HTTPException(
+                status_code=404,
+                detail="Assignee not found"
+            )
+            
+    task.assignee_id = assigned_task.assignee_id
+    db.commit()
+    db.refresh(task)
+    return task        
+    
     
 @router.delete("/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_task(

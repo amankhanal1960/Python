@@ -33,8 +33,8 @@ class Task(Base):
     created_at = Column(Date, nullable=False)
     
     project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
-    creator_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=False)
-    asignee_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    creator_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    assignee_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     
     creator = relationship(
         "User",
@@ -42,14 +42,15 @@ class Task(Base):
     )
     assignee = relationship(
         "User",
-        foreign_keys=[asignee_id]
+        foreign_keys=[assignee_id]
     )
 class Comment(Base):
     __tablename__ = "comments"
     
     id = Column(Integer, primary_key=True, index=True)
-    body = Column(String, nullable=False)
+    content = Column(String, nullable=False)
     created_at = Column(Date, nullable=False)
     task_id = Column(Integer, ForeignKey("tasks.id", ondelete="CASCADE"), nullable=False)
     author_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    
     
