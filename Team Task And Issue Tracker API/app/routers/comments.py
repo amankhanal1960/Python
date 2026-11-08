@@ -7,13 +7,12 @@ from app.database import get_db
 from app.security import get_current_user
 
 router = APIRouter(
-    prefix="/comment",
+    prefix="/tasks",
     tags=["Comment"]
 )
 
 # Creating a comment
-@router.post("/task", status_code=status.HTTP_201_CREATED,
-             response_model=schemas.CommentResponse)
+@router.post("/{task_id}/comments/", status_code=status.HTTP_201_CREATED, response_model=schemas.CommentResponse)
 def create_comment(
     task_id: int,
     comment: schemas.CommentCreate,
@@ -36,3 +35,18 @@ def create_comment(
     db.commit()
     db.refresh(comment_db)
     return comment_db
+
+@router.get("/{task_id}/comments/", status_code=status.HTTP_200_OK, response_model=list[schemas.CommentResponse])
+def get_comments(
+    task_id: int, 
+    db: Session = Depends(get_db),
+):
+    
+    tasks = db.query(models.Task).filter(models.Task.id == task_id)
+    if not tasks:
+        raise HTTPException(status_code=404, detail="Task doesn't exists")
+    
+    comment_query = db.query(models.Comment).filter(models.Comment.task_id == task_id)
+    comments = comment_query.all()
+    
+    return comments
