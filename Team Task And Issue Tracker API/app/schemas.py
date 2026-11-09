@@ -70,3 +70,11 @@ class CommentResponse(BaseModel):
     author_id: int
     created_at: datetime
     model_config = {"from_attribute": True}
+
+class DashboardResponse(BaseModel):
+    assigned_tasks: list[TaskResponse]
+    project_tasks: list[TaskResponse]
+    overdue_tasks: list[TaskResponse]
+    total_assigned: int
+    total_overdue: int
+    class Config: from_attribute = True
