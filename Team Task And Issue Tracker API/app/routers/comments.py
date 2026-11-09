@@ -50,3 +50,21 @@ def get_comments(
     comments = comment_query.all()
     
     return comments
+
+@router.delete("/{task_id}/comments/{comment_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_comment(
+    comment_id: int, 
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    comment_query = db.query(models.Comment).filter(
+        models.comment.id == comment_id,
+        models.Comment.author_id == current_user.id
+    )
+    comment = comment_query.first()
+    
+    if not comment:
+        raise HTTPException(status_code=404, detail="Comment not found")
+    comment_query.delete(synchronize_session=False)
+    db.commit()
+    return Response(status.HTTP_204_NO_CONTENT) 

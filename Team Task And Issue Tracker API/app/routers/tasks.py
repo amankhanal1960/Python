@@ -101,7 +101,7 @@ def update_task(
     db.refresh(task)
     return task
 
-@router.patch("/task/{task_id}/assignee", status_code=status.HTTP_200_OK)
+@router.patch("/{task_id}/assignee", status_code=status.HTTP_200_OK)
 def assign_task(
     task_id: int,
     assigned_task: schemas.TaskAssign,
