@@ -24,7 +24,7 @@ def create_user(user:schemas.UserCreate, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(db_user)
         return db_user
-    except IntegrityError:
+    except IntegrityError as e:
         db.rollback()
         existing_user = db.query(models.User).filter(
             (models.User.email == user.email) | (models.User.username == user.username)).first()
@@ -33,6 +33,11 @@ def create_user(user:schemas.UserCreate, db: Session = Depends(get_db)):
                 status_code=400,
                 detail="User with this email already exists"
             )
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Database integrity error: {str(e.orig)}"
+        )
+
 
 @router.post("/login", status_code=status.HTTP_200_OK)
 def login_user(

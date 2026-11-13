@@ -77,4 +77,4 @@ class DashboardResponse(BaseModel):
     overdue_tasks: list[TaskResponse]
     total_assigned: int
     total_overdue: int
-    class Config: from_attribute = True
+    model_config = {"from_attribute": True}

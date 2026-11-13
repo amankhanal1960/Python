@@ -1,7 +1,8 @@
 from sqlalchemy.orm import relationship
 
 from app.database import Base
-from sqlalchemy import Column, ForeignKey, Integer, String, Date
+from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Date
+from datetime import datetime, timezone
 
 
 class User(Base):
@@ -9,8 +10,9 @@ class User(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True)
+    username = Column(String, unique=True, index=True)
     hashed_password = Column(String)
-    created_at = Column(Date, nullable=False)
+    created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
 
 class Project(Base):
     __tablename__ = "projects"
