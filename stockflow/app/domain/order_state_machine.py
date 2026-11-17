@@ -1,6 +1,5 @@
 import enum
 
-from app.models import Order
 
 class OrderStatus(str, enum.Enum):
     PENDING_PAYMENT = "PENDING_PAYMENT"
@@ -9,7 +8,8 @@ class OrderStatus(str, enum.Enum):
     CANCELLED = "CANCELLED"
     COMPLETED = "COMPLETED"
     REFUNDED = "REFUNDED"
-    
+
+
 VALID_ORDER_TRANSITIONS: dict[OrderStatus, set[OrderStatus]] = {
     OrderStatus.PENDING_PAYMENT: {
         OrderStatus.PAID,
@@ -28,8 +28,10 @@ VALID_ORDER_TRANSITIONS: dict[OrderStatus, set[OrderStatus]] = {
     OrderStatus.REFUNDED: set(),
 }
 
+
 class InvalidOrderTransitionError(Exception):
     pass
+
 
 def validate_and_get_next_status(current_status: str, next_status: OrderStatus) -> str:
     current = OrderStatus(current_status)
