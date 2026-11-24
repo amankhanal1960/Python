@@ -1,3 +1,5 @@
+from operator import inv
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -90,4 +92,10 @@ def list_products(db: Session = Depends(get_db)):
         .outerjoin(models.Inventory, models.Product.id == models.Inventory.product_id)
         .all()
     )
-    return [{"product": p, "inventory": inv} for p, inv in rows]
+    # return [{"product": p, "inventory": inv} for p, inv in rows]
+    result = []
+    for row in rows:
+        p, inv = row
+        item = {"product": p, "inventory": inv}
+        result.append(item)
+    return result
