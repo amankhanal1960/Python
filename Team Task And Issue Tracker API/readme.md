@@ -1,0 +1,1 @@
+This project tracks the assigned tasks, and lets anyone assign task to anyone

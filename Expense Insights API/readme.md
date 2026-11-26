@@ -1,1 +1,1 @@
-This is the Expense Insight API
+This is the Expense Insight API app for storing and retrieving the expenses throughout the timeframe
